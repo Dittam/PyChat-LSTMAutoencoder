@@ -6,3 +6,4 @@ data/testInputs.txt
 data/testTargets.txt
 data/trainInputs.txt
 data/trainTargets.txt
+test.py
