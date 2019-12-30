@@ -1,0 +1,8 @@
+data/embeddingMatrixGolve6b100.npy
+data/glove.6B.100d.txt
+data/movie_conversations.txt
+data/movie_lines.txt
+data/testInputs.txt
+data/testTargets.txt
+data/trainInputs.txt
+data/trainTargets.txt
