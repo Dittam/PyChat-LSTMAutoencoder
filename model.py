@@ -2,29 +2,14 @@ from keras.models import Model
 from keras.layers import Input, LSTM, Dense, Embedding
 from keras.initializers import Constant
 from keras.utils import plot_model
-from tensorflow import placeholder
-from keras.preprocessing.sequence import pad_sequences
-import preprocessing
-import wordEmbeddings
 import numpy as np
 
 
-def str2tokens(sentence, word2idx, MAX_SENTENCE_LENGTH):
-  words = sentence.lower().split()
-  tokensList = list()
-  for word in words:
-    try:
-      tokensList.append(word2idx[word])
-    except:
-      tokensList.append(word2idx["<UNK>"])
-  return pad_sequences([tokensList], maxlen=MAX_SENTENCE_LENGTH, padding='post')
-
-
 def defineModels(MAX_SENTENCE_LENGTH, MAX_VOCAB_SIZE, LATENT_DIM,
-                 EMBEDDING_DIM, embeddingMatrix):
+                 EMBEDDING_DIM, LR, embeddingMatrix):
 
   wordEmbeddingLayer = Embedding(MAX_VOCAB_SIZE, EMBEDDING_DIM, embeddings_initializer=Constant(
-    embeddingMatrix), input_length=MAX_SENTENCE_LENGTH, trainable=False, name="wordEmbeddingLayer")
+    embeddingMatrix), mask_zero=True, input_length=MAX_SENTENCE_LENGTH, trainable=False, name="wordEmbeddingLayer")
 
   # ----TRAINING MODEL----
 
@@ -47,7 +32,7 @@ def defineModels(MAX_SENTENCE_LENGTH, MAX_VOCAB_SIZE, LATENT_DIM,
   decOutput = decDense(decHiddenStates)
 
   trainModel = Model([encInputLayer, decInputLayer], decOutput)
-  trainModel.compile(optimizer='rmsprop',
+  trainModel.compile(optimizer="rmsprop",
                      loss='categorical_crossentropy', metrics=['accuracy'])
 
   # ----INFERENCE MODEL----
@@ -68,49 +53,18 @@ def defineModels(MAX_SENTENCE_LENGTH, MAX_VOCAB_SIZE, LATENT_DIM,
   return trainModel, encInferenceModel, decInferenceModel
 
 
-def runInference(sentence, eModel, dModel, word2idx, MAX_SENTENCE_LENGTH):
-  idx2word = {v: k for k, v in word2idx.items()}
-  stateValues = eModel.predict(str2tokens(
-    sentence, word2idx, MAX_SENTENCE_LENGTH))
-  targetSeq = np.zeros((1, 20))
-  targetSeq[0, 0] = word2idx['<SOS>']
-  eos = word2idx['<EOS>']
-  outputSentence = []
-
-  for _ in range(MAX_SENTENCE_LENGTH):
-    output_tokens, h, c = dModel.predict([targetSeq] + stateValues)
-    idx = np.argmax(output_tokens[0, 0, :])
-    if eos == idx:
-      outputSentence.append("<EOS>")
-      break
-    if idx > 0:
-      outputSentence.append(idx2word[idx])
-
-    targetSeq[0, 0] = idx
-    stateValues = [h, c]
-
-  return ' '.join(outputSentence)
-
-
 if __name__ == '__main__':
-  import numpy as np
-  import wordEmbeddings
-  import preprocessing
-
   MAX_SENTENCE_LENGTH = 20
   MAX_VOCAB_SIZE = 10000
   LATENT_DIM = 250
   EMBEDDING_DIM = 100
+  LR = 0.001
 
-  # inputs, targets, word2idx = preprocessing.tokenizeData(
-  #   MAX_SENTENCE_LENGTH, MAX_VOCAB_SIZE)
-  # embeddingMatrix = wordEmbeddings.generateEmbeddingMatrix(
-  #   "glove.6B.100d.txt", word2idx, MAX_SENTENCE_LENGTH, MAX_VOCAB_SIZE, EMBEDDING_DIM, True)
+  embeddingMatrix = np.load(
+    "data/embeddingMatrixGolve6b100.npy")
 
-  embeddingMatrix = np.load("embeddingMatrixGolve6b100.npy")
-
-  trianModel, eModel, dModel = trainModel(MAX_SENTENCE_LENGTH, MAX_VOCAB_SIZE,
-                                          LATENT_DIM, EMBEDDING_DIM, embeddingMatrix)
+  trianModel, eModel, dModel = defineModels(MAX_SENTENCE_LENGTH, MAX_VOCAB_SIZE,
+                                            LATENT_DIM, EMBEDDING_DIM, LR, embeddingMatrix)
 
   # plot_model(model, to_file='modelPlot.png',
   #            show_shapes=True, show_layer_names=True)

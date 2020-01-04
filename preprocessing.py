@@ -3,6 +3,7 @@ import numpy as np
 import math
 import random
 import re
+import linecache
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 from keras.utils import to_categorical
@@ -148,13 +149,14 @@ def corpusStats(idx2line):
 
 class CornellMovieDataGenerator(Sequence):
   """
-  Data generator for Cornell Movie-Dialogs Corpus
-  reads in data in batches so that using to_categorical
-  on decoderTarget doesnt cause emeory issues
+  Data generator for Cornell Movie-Dialogs Corpus,
+  reads in data in batches so that one hot encoding decoderTarget doesnt
+  cause memeory issues
   """
 
   def __init__(self, inputPath, targetPath, batchSize,
-               MAX_SENTENCE_LENGTH, MAX_VOCAB_SIZE, shuffle=True):
+               MAX_SENTENCE_LENGTH, MAX_VOCAB_SIZE, shuffle=True,
+               dropRemainder=False):
 
     self.inputPath = inputPath
     self.targetPath = targetPath
@@ -165,6 +167,9 @@ class CornellMovieDataGenerator(Sequence):
 
     with open(inputPath, "r") as f:
       self.numLines = sum(1 for line in f)
+    if dropRemainder:
+      self.numLines = self.numLines - (numLines % batchSize)
+
     # since linecache starts index at 1
     self.lineIDs = list(range(1, self.numLines + 1))
     self.tokenizer, self.word2idx = self.initTokenizer()

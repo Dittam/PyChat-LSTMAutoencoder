@@ -1,5 +1,4 @@
 import numpy as np
-import linecache
 
 
 def generateUNKEmbedding(embeddingVecs, EMBEDDING_DIM):
