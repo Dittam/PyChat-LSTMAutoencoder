@@ -11,3 +11,5 @@ test2.py
 sampleInferences.txt
 data/word2idx.pkl
 trainedModels/desktop.ini
+*.pyc
+fbAppEX.py
