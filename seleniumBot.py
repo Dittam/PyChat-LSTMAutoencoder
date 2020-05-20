@@ -20,6 +20,10 @@ def login(email, password):
 
 
 def initChatHistory():
+    """
+    iterates through all chats saving the number of visible messages in each
+    chat in a dictionary
+    """
     print("initializing chat history...")
     chatLengths = dict()
     allChats = driver.find_elements_by_xpath("//li[contains(@class,'_5l-3')]")
@@ -36,6 +40,7 @@ def initChatHistory():
 def mainLoop(pollFreq, chatName="Test Env"):
     print("listening...")
     while True:
+        # check for new messages in all chats that are not currently selected
         try:
             newAlert = driver.find_element_by_xpath(
                 "//li[contains(@class,'_1ht3')]")
@@ -44,6 +49,8 @@ def mainLoop(pollFreq, chatName="Test Env"):
                 "//span[@class='_3oh-']").text
         except:
             pass
+        # compare number of new messages to number of old messages for current
+        # chat, and only respond to new messages
         time.sleep(pollFreq)
         newMessages = driver.find_elements_by_xpath(
             "//span[@class='_3oh- _58nk']")
@@ -57,6 +64,9 @@ def mainLoop(pollFreq, chatName="Test Env"):
 
 
 def onNewMessage(text):
+    """
+    Generate and send response from pybot's ML model
+    """
     if "@PyBot Alpha" in text:
         print(text)
         response = runInference(clean(text.split(' ', 2)[2]), eModel, dModel,
@@ -84,7 +94,7 @@ if __name__ == '__main__':
     driver = webdriver.Chrome(
         'C:/Program Files (x86)/Google/Chrome/Application/chromedriver.exe')
 
-    login("useername", "password")
+    login("username", "password")
     chatLengths = initChatHistory()
     driver.find_element_by_xpath(
         "//*[contains(text(), '" + "Test Env" + "')]").click()
