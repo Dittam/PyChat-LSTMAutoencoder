@@ -4,7 +4,6 @@ import math
 import random
 import re
 import linecache
-import pickle
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 from keras.utils import to_categorical
@@ -148,7 +147,7 @@ def corpusStats(idx2line):
   # vocab = list(wordCounts.index)
 
 
-class CustomDataGenerator(Sequence):
+class CornellMovieDataGenerator(Sequence):
   """
   Data generator for Cornell Movie-Dialogs Corpus,
   reads in data in batches so that one hot encoding decoderTarget doesnt
@@ -251,10 +250,6 @@ class CustomDataGenerator(Sequence):
       decoderTargets, self.MAX_VOCAB_SIZE))
 
     return encoderInput, decoderInput, decoderTargets
-
-  def saveWord2Idx(self, filename):
-    with open(filename, 'wb') as handle:
-      pickle.dump(self.word2idx, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 
 if __name__ == '__main__':

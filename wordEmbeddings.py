@@ -50,8 +50,8 @@ def generateEmbeddingMatrix(gloveEmbeddingPath, word2idx, MAX_SENTENCE_LENGTH,
     else:
       embeddingMatrix[idx] = vec
 
-  if saveMatrix != "":
-    np.save(saveMatrix, embeddingMatrix)
+  if saveMatrix:
+    np.save("data/embeddingMatrixGolve6b100.npy", embeddingMatrix)
 
   return embeddingMatrix
 
@@ -62,5 +62,4 @@ if __name__ == '__main__':
   trainGenerator = preprocessing.CornellMovieDataGenerator(
     "data/trainInputs.txt", "data/trainTargets.txt", 1024, 20, 10000)
   embeddingMatrix = generateEmbeddingMatrix(
-    "data/glove.6B.100d.txt", trainGenerator.word2idx, 20, 10000, 100, 
-    "embeddingMatrixGolve6b100_2.npy")
+    "data/glove.6B.100d.txt", trainGenerator.word2idx, 20, 10000, 100, True)

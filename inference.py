@@ -1,8 +1,7 @@
 from keras.models import load_model
 from keras.preprocessing.sequence import pad_sequences
-from preprocessing import CustomDataGenerator
+from preprocessing import CornellMovieDataGenerator
 import numpy as np
-import pickle
 
 
 def str2tokens(sentence, word2idx, MAX_SENTENCE_LENGTH):
@@ -41,28 +40,22 @@ def runInference(sentence, eModel, dModel, word2idx, MAX_SENTENCE_LENGTH):
 
 if __name__ == '__main__':
 
-  MAX_VOCAB_SIZE = 1879
   MAX_SENTENCE_LENGTH = 20
+  MAX_VOCAB_SIZE = 10000
   LATENT_DIM = 250
   EMBEDDING_DIM = 100
+  BATCH_SIZE = 540
   EPOCHS = 20
-  BATCH_SIZE = 25
   sentence = "hello how are you"
 
-  # dataGenerator = CustomDataGenerator(
-  #   'C:/Users/ditta/Desktop/kagglePyBotDataset/trainInputs.txt', 'C:/Users/ditta/Desktop/kagglePyBotDataset/trainTargets.txt', BATCH_SIZE, MAX_SENTENCE_LENGTH, MAX_VOCAB_SIZE)
-  word2idx = pickle.load(open("C:/Users/ditta/Desktop/kagglePyBotDataset/word2idx_2.pkl", "rb"))
-
+  dataGenerator = CornellMovieDataGenerator(
+    'data/trainInputs.txt', 'trainTargets.txt', BATCH_SIZE, MAX_SENTENCE_LENGTH, MAX_VOCAB_SIZE)
+  trainModel = load_model(
+      "trainedModels/trainModel_20EPOCHS_ 2.63LOSS.h5")
   eModel = load_model(
-    "C:/Users/ditta/Desktop/kagglePyBotDataset/trainedModels/eModel240_0.033.h5", compile=False)
+    "trainedModels/eModel_20EPOCHS_ 2.63LOSS.h5", compile=False)
   dModel = load_model(
-    "C:/Users/ditta/Desktop/kagglePyBotDataset/trainedModels/dModel240_0.033.h5", compile=False)
+    "C:/trainedModels/dModel_20EPOCHS_ 2.63LOSS.h5", compile=False)
 
-  while True:
-    sentence = input(">>> ")
-
-    if sentence == "exit()":
-      break
-
-    print(runInference(sentence, eModel, dModel,
-                       word2idx, MAX_SENTENCE_LENGTH))
+  print(runInference(sentence, eModel, dModel,
+                     dataGenerator.word2idx, MAX_SENTENCE_LENGTH))

@@ -6,7 +6,7 @@ import numpy as np
 
 
 def defineModels(MAX_SENTENCE_LENGTH, MAX_VOCAB_SIZE, LATENT_DIM,
-                 EMBEDDING_DIM, embeddingMatrix):
+                 EMBEDDING_DIM, LR, embeddingMatrix):
 
   wordEmbeddingLayer = Embedding(MAX_VOCAB_SIZE, EMBEDDING_DIM, embeddings_initializer=Constant(
     embeddingMatrix), mask_zero=True, input_length=MAX_SENTENCE_LENGTH, trainable=False, name="wordEmbeddingLayer")
@@ -64,7 +64,7 @@ if __name__ == '__main__':
     "data/embeddingMatrixGolve6b100.npy")
 
   trianModel, eModel, dModel = defineModels(MAX_SENTENCE_LENGTH, MAX_VOCAB_SIZE,
-                                            LATENT_DIM, EMBEDDING_DIM, embeddingMatrix)
+                                            LATENT_DIM, EMBEDDING_DIM, LR, embeddingMatrix)
 
-  # plot_model(trianModel, to_file='modelPlot.png',
+  # plot_model(model, to_file='modelPlot.png',
   #            show_shapes=True, show_layer_names=True)
