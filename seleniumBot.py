@@ -79,14 +79,12 @@ def onNewMessage(text):
 if __name__ == '__main__':
     # Load Model
     MAX_SENTENCE_LENGTH = 20
-    paths = "C:/Users/ditta/Desktop/LSTMPyBotData/"
-    word2idx = pickle.load(open(paths + "word2idx.pkl", "rb"))
-    trainModel = load_model(
-        paths + "trainedModels/trainModel_20EPOCHS_ 2.63LOSS.h5")
+    paths = "C:/Users/ditta/Desktop/kagglePyBotDataset/"
+    word2idx = pickle.load(open(paths + "word2idx_2.pkl", "rb"))
     eModel = load_model(
-      paths + "trainedModels/eModel_20EPOCHS_ 2.63LOSS.h5", compile=False)
+      paths + "trainedModels/eModel240_0.033.h5", compile=False)
     dModel = load_model(
-      paths + "trainedModels/dModel_20EPOCHS_ 2.63LOSS.h5", compile=False)
+      paths + "trainedModels/dModel240_0.033.h5", compile=False)
     # print(runInference("hello how are you", eModel,
     #                   dModel, word2idx, MAX_SENTENCE_LENGTH))
 
